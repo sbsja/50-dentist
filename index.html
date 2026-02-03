@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>50% Dentist!</title>
+<title>50% Tandläkare!</title>
 <style>
   body{
     margin:0; height:100vh; display:grid; place-items:center;
@@ -12,24 +12,25 @@
     overflow:hidden;
   }
 
-  /* ✅ Always-on confetti canvas */
+  /* Confetti stays behind the card */
   #confetti{
     position:fixed;
     inset:0;
     pointer-events:none;
-    z-index:0;
+    z-index:0; /* behind */
   }
 
   .card{
     width:min(560px, 92vw);
     padding:28px 26px;
     border-radius:22px;
-    background: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.88);
     box-shadow: 0 14px 44px rgba(0,0,0,0.12);
     text-align:center;
     position:relative;
-    z-index:1; /* keep above confetti */
+    z-index:2; /* above confetti */
   }
+
   .tooth{
     font-size:84px;
     display:inline-block;
@@ -46,6 +47,7 @@
     0%,100%{transform:translateY(0)}
     50%{transform:translateY(-8px)}
   }
+
   h1{
     margin:10px 0 6px;
     font-size: clamp(22px, 4vw, 34px);
@@ -53,7 +55,7 @@
   p{
     margin:0 0 18px;
     font-size: clamp(14px, 2.4vw, 18px);
-    opacity:0.9;
+    opacity:0.92;
   }
 
   .bar-wrap{
@@ -117,17 +119,16 @@
 </head>
 <body>
 
-  <!-- ✅ Confetti layer -->
   <canvas id="confetti"></canvas>
 
   <div class="card">
     <div class="sparkles"></div>
 
     <div class="tooth">🦷</div>
-    <h1>Congrats — 50% Dentist!</h1>
-    <p>Halfway through dentistry 🎓✨ Keep going!</p>
+    <h1>Grattis Coleen 50% tandborrare</h1>
+    <p>Halvvägs genom tandläkarprogrammet 🎓✨ snyggt.</p>
 
-    <div class="bar-wrap" aria-label="progress bar">
+    <div class="bar-wrap" aria-label="förloppsindikator">
       <div class="bar" id="bar"></div>
       <div class="marker" id="marker">🪥</div>
     </div>
@@ -136,8 +137,8 @@
   </div>
 
 <script>
-  // ====== Your progress animation (unchanged) ======
-  const target = 50;               // change to any % if you want
+  // Progress animation
+  const target = 50;
   const bar = document.getElementById("bar");
   const marker = document.getElementById("marker");
   const percent = document.getElementById("percent");
@@ -158,7 +159,7 @@
     if (val >= steps) clearInterval(timer);
   }, stepTime);
 
-  // ====== ✅ Always-on confetti rain ======
+  // Confetti rain (behind the card)
   const canvas = document.getElementById("confetti");
   const ctx = canvas.getContext("2d");
 
@@ -178,11 +179,10 @@
   const colors = ["#ff4da0","#7a5cff","#3db7ff","#ffcc66","#35d07f","#ff6b6b"];
   const confetti = [];
 
-  // Tune these:
-  const MAX = 260;            // max pieces on screen
-  const SPAWN_PER_FRAME = 2;  // continuous spawn rate (lower = lighter)
-  const GRAV = 0.08;          // gravity strength
-  const DRIFT = 0.03;         // sideways drift
+  const MAX = 240;
+  const SPAWN_PER_FRAME = 2;
+  const GRAV = 0.08;
+  const DRIFT = 0.03;
 
   function spawn(n = 1) {
     for (let i = 0; i < n; i++) {
@@ -196,17 +196,15 @@
         vr: (Math.random() - 0.5) * 0.18,
         w: size * (1 + Math.random()),
         h: size * (0.6 + Math.random()),
-        a: 0.65 + Math.random() * 0.35,
+        a: 0.55 + Math.random() * 0.30,
         c: colors[(Math.random() * colors.length) | 0],
       });
     }
   }
 
-  // seed some initial confetti
   spawn(120);
 
   function step() {
-    // keep a steady stream
     if (confetti.length < MAX) spawn(SPAWN_PER_FRAME);
 
     ctx.clearRect(0, 0, W, H);
@@ -220,11 +218,9 @@
       p.y += p.vy;
       p.r += p.vr;
 
-      // wrap sideways
       if (p.x < -40 * DPR) p.x = W + 40 * DPR;
       if (p.x > W + 40 * DPR) p.x = -40 * DPR;
 
-      // remove if gone
       if (p.y > H + 60 * DPR) {
         confetti.splice(i, 1);
         continue;
@@ -242,7 +238,6 @@
     requestAnimationFrame(step);
   }
 
-  // Only run if user hasn't asked for reduced motion
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     step();
   }
